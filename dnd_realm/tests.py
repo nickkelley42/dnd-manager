@@ -1,6 +1,8 @@
 from django.test import TestCase
 from .models import Realm, Character
 
+from math import floor
+
 # Create your tests here.
 
 class RealmModelTests(TestCase):
@@ -55,3 +57,46 @@ class CharacterModelTests(TestCase):
         self.assertIsInstance(character.base_intelligence, int)
         self.assertIsInstance(character.base_wisdom, int)
         self.assertIsInstance(character.base_charisma, int)
+
+    def test_character_strength_modifier(self):
+        """
+        Character ability modifiers are derived from base stats
+        """
+        c = Character()
+        for i in range(1, 31):
+            c.base_strength = i
+            expected = floor((i - 10) / 2)
+            self.assertEqual(c.strength_modifier, expected)
+        for i in range(1, 31):
+            c.base_dexterity = i
+            expected = floor((i - 10) / 2)
+            self.assertEqual(c.dexterity_modifier, expected)
+        for i in range(1, 31):
+            c.base_constitution = i
+            expected = floor((i - 10) / 2)
+            self.assertEqual(c.constitution_modifier, expected)
+        for i in range(1, 31):
+            c.base_intelligence = i
+            expected = floor((i - 10) / 2)
+            self.assertEqual(c.intelligence_modifier, expected)
+        for i in range(1, 31):
+            c.base_wisdom = i
+            expected = floor((i - 10) / 2)
+            self.assertEqual(c.wisdom_modifier, expected)
+        for i in range(1, 31):
+            c.base_charisma = i
+            expected = floor((i - 10) / 2)
+            self.assertEqual(c.charisma_modifier, expected)
+
+class UrlStructureTests(TestCase):
+    def test_realm_index(self):
+        """
+        Verify that getting a realm by id works
+        """
+        realm = Realm(name="my realm")
+        realm.save()
+
+        response = self.client.get('/realm/%d' % realm.id)
+
+        self.assertTrue(response.status_code == 200, "response has 200 status")
+        self.assertTrue(realm.name.encode() in response.content, "response includes the name of the realm")
