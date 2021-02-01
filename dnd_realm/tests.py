@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Realm, Character
+from .models import Character, Realm, Trait
 
 from math import floor
 
@@ -87,6 +87,31 @@ class CharacterModelTests(TestCase):
             c.base_charisma = i
             expected = floor((i - 10) / 2)
             self.assertEqual(c.charisma_modifier, expected)
+
+    def test_character_has_traits(self):
+        """
+        traits provide bonuses for the character
+        """
+        c = Character()
+        c.save()
+        t = Trait(
+            name='my trait',
+            strength_bonus=1,
+            dexterity_bonus=1,
+            constitution_bonus=1,
+            intelligence_bonus=1,
+            wisdom_bonus=1,
+            charisma_bonus=1
+        )
+        t.save()
+        c.trait_set.add(t)
+
+        self.assertEqual(c.strength, 1, "strength is base + bonus")
+        self.assertEqual(c.dexterity, 1, "strength is base + bonus")
+        self.assertEqual(c.constitution, 1, "strength is base + bonus")
+        self.assertEqual(c.intelligence, 1, "strength is base + bonus")
+        self.assertEqual(c.wisdom, 1, "strength is base + bonus")
+        self.assertEqual(c.charisma, 1, "strength is base + bonus")
 
 class UrlStructureTests(TestCase):
     def test_realm_index(self):
